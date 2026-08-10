@@ -1,0 +1,28 @@
+name: Sugestões de Conteúdo Semanal
+
+on:
+  schedule:
+    # Toda segunda-feira às 08:00 UTC (09:00 em Portugal continental no horário de inverno)
+    - cron: '0 8 * * 1'
+  workflow_dispatch: {}  # permite correr manualmente a partir do separador Actions
+
+jobs:
+  generate-content:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependências
+        run: pip install requests
+
+      - name: Gerar e publicar sugestões de conteúdo
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: python scripts/generate_content_ideas.py
